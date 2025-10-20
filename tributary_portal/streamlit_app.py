@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import logging
 import random
 from dataclasses import dataclass
 from pathlib import Path
@@ -13,6 +14,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
 from duckduckgo_search import DDGS
+from duckduckgo_search.exceptions import DuckDuckGoSearchException
 from fpdf import FPDF
 
 
@@ -32,6 +34,9 @@ CATEGORY_PROMPTS = {
 RESOURCE_BASE_PATH = Path(__file__).resolve().parent.parent / "risorse"
 PROGRAM_BASE_PATH = RESOURCE_BASE_PATH / "programma_base.json"
 QUIZ_DATA_PATH = RESOURCE_BASE_PATH / "quiz_tributario.json"
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 def load_base_topics() -> List[str]:
@@ -450,15 +455,27 @@ def run_search(query: str, context: str, max_results: int = 5) -> List[SearchRes
     """Esegue una ricerca tematica usando DuckDuckGo."""
     keywords = f"{query} {context}".strip()
     results: List[SearchResult] = []
-    with DDGS() as search:
-        for item in search.text(keywords, region="it-it", safesearch="moderate", max_results=max_results):
-            results.append(
-                SearchResult(
-                    title=item.get("title", "Risultato senza titolo"),
-                    href=item.get("href", ""),
-                    body=item.get("body", "Sintesi non disponibile."),
+    try:
+        with DDGS() as search:
+            for item in search.text(
+                keywords,
+                region="it-it",
+                safesearch="moderate",
+                max_results=max_results,
+            ):
+                results.append(
+                    SearchResult(
+                        title=item.get("title", "Risultato senza titolo"),
+                        href=item.get("href", ""),
+                        body=item.get("body", "Sintesi non disponibile."),
+                    )
                 )
-            )
+    except (DuckDuckGoSearchException, OSError):
+        LOGGER.exception("DuckDuckGo search failed for keywords '%s'", keywords)
+        st.warning(
+            "Impossibile recuperare nuovi risultati al momento. Riprova tra qualche istante."
+        )
+        return []
     return results
 
 
@@ -722,7 +739,10 @@ def main() -> None:
                 if query:
                     st.session_state["last_query"] = query
                     st.caption(f"Ricerca in corso: **{query}** → {label.lower()}")
-                    results = run_search(query, CATEGORY_PROMPTS[label], max_results=max_results)
+                    with st.spinner("Cerchiamo le risorse più rilevanti..."):
+                        results = run_search(
+                            query, CATEGORY_PROMPTS[label], max_results=max_results
+                        )
                     render_results(results)
                 else:
                     st.info("Digita un argomento per iniziare la ricerca.")
