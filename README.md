@@ -6,7 +6,7 @@ Portale interattivo per supportare lo studio del diritto tributario. L'applicazi
 
 - **Interfaccia intuitiva**: tre schede (articolo, spiegazione, esempio) con risultati immediatamente consultabili e link alle fonti originali.
 - **Ricerca web mirata**: per ogni scheda il portale costruisce query specializzate su DuckDuckGo, restituendo fino a 10 risultati per categoria.
-- **Strumenti completamente gratuiti**: Streamlit per l'interfaccia, DuckDuckGo Search per le interrogazioni e Python come linguaggio di sviluppo.
+- **Strumenti completamente gratuiti**: Streamlit per l'interfaccia, DuckDuckGo Search per le interrogazioni, pandas per la manipolazione dei dati, FPDF2 per l'esportazione in PDF e Python come linguaggio di sviluppo.
 - **Cartella degli elementi necessari**: consulta `risorse/elementi_necessari.md` per un elenco sintetico dei prerequisiti hardware e software.
 
 ## Struttura delle cartelle
@@ -88,5 +88,5 @@ Le istruzioni seguenti fanno riferimento a Visual Studio 2022 Community (gratuit
 
 ## Licenze
 
-- Streamlit e duckduckgo_search sono librerie open-source.
+- Streamlit, duckduckgo_search, pandas e fpdf2 sono librerie open-source.
 - Le ricerche sfruttano i risultati pubblici di DuckDuckGo; verifica sempre l'affidabilità delle fonti ottenute.
