@@ -1,4 +1,11 @@
+# Interfaccia Streamlit (include componenti e form utilizzati nell'app)
 streamlit>=1.32.0
+
+# Motore di ricerca DuckDuckGo per le tre schede informative
 duckduckgo_search>=5.3.0
+
+# Gestione dati per piani di studio, quiz e tabelle
 pandas>=2.0.0
+
+# Esportazione PDF degli appunti
 fpdf2>=2.7.0
