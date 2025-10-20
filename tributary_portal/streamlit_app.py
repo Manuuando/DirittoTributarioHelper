@@ -10,8 +10,10 @@ from typing import Dict, List
 import uuid
 
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 from duckduckgo_search import DDGS
+from fpdf import FPDF
 
 
 @dataclass
@@ -465,12 +467,233 @@ def render_results(results: List[SearchResult]) -> None:
         st.info("Nessun risultato trovato. Prova a riformulare la richiesta.")
         return
 
-    for result in results:
+    for index, result in enumerate(results):
         st.subheader(result.title)
         if result.href:
             st.markdown(f"[Apri la fonte originale]({result.href})")
         st.write(result.body)
+        copy_payload = json.dumps(
+            f"{result.title}\n{result.body}\nFonte: {result.href}" if result.href else f"{result.title}\n{result.body}"
+        ).replace("'", "&#39;")
+        components.html(
+            f"""
+            <button style='padding:0.35rem 0.7rem;border-radius:0.25rem;border:1px solid #bbb;'
+                    onclick='navigator.clipboard.writeText({copy_payload});'>
+                Copia questo risultato
+            </button>
+            """,
+            height=38,
+            key=f"copy_result_{index}",
+        )
         st.divider()
+
+
+def _notes_state() -> List[Dict[str, str]]:
+    return st.session_state.setdefault("study_notes", [])
+
+
+def _create_note_dataframe(notes: List[Dict[str, str]]) -> pd.DataFrame:
+    if not notes:
+        return pd.DataFrame(columns=["Titolo", "Categoria", "Ultimo aggiornamento"])
+
+    df = pd.DataFrame(notes)
+    if "timestamp" in df.columns:
+        df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
+        df = df.sort_values(by=["Categoria", "timestamp"], ascending=[True, False])
+    else:
+        df = df.sort_values(by=["Categoria", "Ultimo aggiornamento"], ascending=[True, False])
+    columns = [
+        "id",
+        "Titolo",
+        "Categoria",
+        "Contenuto",
+        "Ultimo aggiornamento",
+    ]
+    if "timestamp" in df.columns:
+        columns.append("timestamp")
+    return df[columns]
+
+
+def _notes_to_markdown(notes: List[Dict[str, str]]) -> str:
+    lines = ["# Appunti di studio"]
+    for note in notes:
+        lines.append(f"\n## {note['Titolo']} ({note['Categoria']})")
+        lines.append(note["Contenuto"])
+    return "\n".join(lines)
+
+
+def _notes_to_text(notes: List[Dict[str, str]]) -> str:
+    lines = []
+    for note in notes:
+        lines.append(f"Titolo: {note['Titolo']}")
+        lines.append(f"Categoria: {note['Categoria']}")
+        lines.append(note["Contenuto"])
+        lines.append("-" * 40)
+        lines.append("")
+    return "\n".join(lines)
+
+
+def _notes_to_pdf(notes: List[Dict[str, str]]) -> bytes:
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    pdf.cell(0, 10, "Appunti di studio", ln=True)
+    for note in notes:
+        pdf.ln(4)
+        pdf.set_font("Arial", "B", 12)
+        pdf.multi_cell(0, 10, f"{note['Titolo']} ({note['Categoria']})")
+        pdf.set_font("Arial", size=11)
+        pdf.multi_cell(0, 8, note["Contenuto"])
+    return pdf.output(dest="S").encode("latin-1")
+
+
+def render_notes_tab() -> None:
+    st.subheader("Appunti collegati alla ricerca")
+    notes = _notes_state()
+
+    with st.form("note_creator"):
+        title = st.text_input(
+            "Titolo dell'appunto",
+            value=st.session_state.get("note_title", ""),
+        )
+        category_options = sorted({note["Categoria"] for note in notes if note.get("Categoria")})
+        default_category = category_options[0] if category_options else ""
+        category = st.text_input(
+            "Categoria/Argomento",
+            value=st.session_state.get("note_category", default_category),
+            placeholder="Es. Accertamento fiscale",
+        )
+        query_context = st.session_state.get("last_query", "")
+        content_placeholder = (
+            f"Appunti su: {query_context}" if query_context else "Scrivi qui i tuoi appunti"
+        )
+        content = st.text_area(
+            "Contenuto dell'appunto",
+            height=200,
+            value=st.session_state.get("note_content", ""),
+            placeholder=content_placeholder,
+        )
+
+        st.session_state["note_title"] = title
+        st.session_state["note_category"] = category
+        st.session_state["note_content"] = content
+
+        submit_col, reset_col = st.columns([3, 1])
+        with submit_col:
+            submitted = st.form_submit_button("Salva nota")
+        with reset_col:
+            reset = st.form_submit_button("Svuota campi")
+
+        if reset:
+            st.session_state["note_title"] = ""
+            st.session_state["note_category"] = ""
+            st.session_state["note_content"] = ""
+            st.experimental_rerun()
+
+        if submitted:
+            if not title.strip() or not content.strip():
+                st.warning("Titolo e contenuto sono obbligatori per salvare un appunto.")
+            else:
+                current_time = dt.datetime.now()
+                note_entry = {
+                    "id": uuid.uuid4().hex,
+                    "Titolo": title.strip(),
+                    "Categoria": category.strip() or "Generale",
+                    "Contenuto": content.strip(),
+                    "timestamp": current_time.isoformat(),
+                    "Ultimo aggiornamento": current_time.strftime("%d/%m/%Y %H:%M"),
+                }
+                notes.append(note_entry)
+                st.session_state["note_title"] = ""
+                st.session_state["note_category"] = note_entry["Categoria"]
+                st.session_state["note_content"] = ""
+                st.success("Appunto salvato correttamente!")
+
+    if not notes:
+        st.info("Aggiungi il tuo primo appunto per iniziare a costruire un archivio di studio.")
+        return
+
+    df = _create_note_dataframe(notes)
+    st.dataframe(
+        df.drop(columns=[col for col in ["id", "Contenuto", "timestamp"] if col in df.columns]),
+        hide_index=True,
+        use_container_width=True,
+    )
+
+    note_lookup = {note["id"]: note for note in notes}
+    selected_ids = st.multiselect(
+        "Seleziona gli appunti su cui lavorare",
+        options=[note["id"] for note in notes],
+        format_func=lambda note_id: f"{note_lookup[note_id]['Titolo']} ({note_lookup[note_id]['Categoria']})",
+    )
+
+    selected_notes = [note_lookup[note_id] for note_id in selected_ids]
+
+    if selected_notes:
+        markdown_data = _notes_to_markdown(selected_notes)
+        text_data = _notes_to_text(selected_notes)
+        pdf_data = _notes_to_pdf(selected_notes)
+
+        export_col1, export_col2, export_col3 = st.columns(3)
+        with export_col1:
+            st.download_button(
+                "Scarica in Markdown",
+                data=markdown_data.encode("utf-8"),
+                file_name="appunti.md",
+                mime="text/markdown",
+            )
+        with export_col2:
+            st.download_button(
+                "Scarica in TXT",
+                data=text_data.encode("utf-8"),
+                file_name="appunti.txt",
+                mime="text/plain",
+            )
+        with export_col3:
+            st.download_button(
+                "Scarica in PDF",
+                data=pdf_data,
+                file_name="appunti.pdf",
+                mime="application/pdf",
+            )
+
+        st.markdown("### Azioni rapide")
+        selected_to_copy = st.selectbox(
+            "Scegli l'appunto da copiare negli appunti",
+            options=selected_notes,
+            format_func=lambda note: f"{note['Titolo']} ({note['Categoria']})",
+            key="note_copy_selector",
+        )
+
+        if selected_to_copy:
+            copy_payload = json.dumps(selected_to_copy["Contenuto"]).replace("'", "&#39;")
+            components.html(
+                f"""
+                <button style='padding:0.4rem 0.8rem;border-radius:0.25rem;border:1px solid #ccc;'
+                        onclick='navigator.clipboard.writeText({copy_payload});'>
+                    Copia contenuto selezionato
+                </button>
+                """,
+                height=40,
+            )
+
+        if st.button("Genera sintesi"):
+            summary_lines = [
+                f"- **{note['Titolo']}** ({note['Categoria']}): {note['Contenuto']}"
+                for note in selected_notes
+            ]
+            summary_text = "\n".join(summary_lines)
+            st.session_state["notes_summary"] = summary_text
+
+    summary_text = st.session_state.get("notes_summary")
+    if summary_text:
+        st.markdown("### Sintesi generata")
+        st.text_area(
+            "Schema di ripasso rapido",
+            value=summary_text,
+            height=200,
+        )
 
 
 def main() -> None:
@@ -490,18 +713,21 @@ def main() -> None:
     query = st.text_input("Argomento di interesse", placeholder="Es. accertamento fiscale")
     max_results = st.slider("Numero di risultati per categoria", min_value=1, max_value=10, value=3)
 
-    tab_labels = list(CATEGORY_PROMPTS.keys()) + ["Piano di studio", "Quiz"]
+    tab_labels = list(CATEGORY_PROMPTS.keys()) + ["Appunti", "Piano di studio", "Quiz"]
     tabs = st.tabs(tab_labels)
 
     for tab, label in zip(tabs, tab_labels):
         with tab:
             if label in CATEGORY_PROMPTS:
                 if query:
+                    st.session_state["last_query"] = query
                     st.caption(f"Ricerca in corso: **{query}** → {label.lower()}")
                     results = run_search(query, CATEGORY_PROMPTS[label], max_results=max_results)
                     render_results(results)
                 else:
                     st.info("Digita un argomento per iniziare la ricerca.")
+            elif label == "Appunti":
+                render_notes_tab()
             elif label == "Piano di studio":
                 render_study_plan_tab()
             else:
