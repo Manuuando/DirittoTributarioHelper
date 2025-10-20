@@ -12,30 +12,95 @@ Portale interattivo per supportare lo studio del diritto tributario. L'applicazi
 
 ## Prerequisiti
 
-Consulta `risorse/elementi_necessari.md` per un riepilogo di hardware e software consigliato. È sufficiente Python 3.10+ con accesso a Internet per effettuare le ricerche web.
+- **Sistema operativo**: Windows 11 (qualsiasi edizione).
+- **Python**: versione 3.10 o successiva. Le istruzioni qui riportate sono testate con Python 3.11.
+- **Visual Studio 2022 Community**: installa il carico di lavoro "Sviluppo desktop con Python" per avere `Python`, `pip`, `venv` e il terminale "Developer PowerShell" già configurati.
+- **Git**: installato automaticamente con Visual Studio o scaricabile da [git-scm.com](https://git-scm.com/download/win).
+- **Connessione Internet**: necessaria per eseguire le ricerche su DuckDuckGo e per installare le dipendenze.
 
-## Installazione rapida
+Consulta `risorse/elementi_necessari.md` per un riepilogo di hardware e software consigliato.
 
-Le indicazioni si riferiscono a Windows 11 con Visual Studio 2022 Community, ma possono essere seguite anche con Visual Studio Code o qualsiasi terminale.
+## Guida passo-passo per Windows 11 con Visual Studio 2022
 
-```powershell
-# 1. Clona o scarica il progetto
-git clone https://github.com/<tuo-account>/DirittoTributarioHelper.git
-cd DirittoTributarioHelper
+### 1. Preparazione dell'ambiente
 
-# 2. Crea e attiva un ambiente virtuale
-py -3.11 -m venv .venv
-.\.venv\Scripts\activate
+1. Avvia **Visual Studio 2022**.
+2. Nella schermata iniziale, apri il menu a ingranaggio ➜ **Strumenti** ➜ **Get Tools and Features** per assicurarti che il carico di lavoro _Sviluppo desktop con Python_ sia selezionato. Riavvia Visual Studio al termine dell'installazione.
+3. Verifica la presenza di Python aprendo **Strumenti ➜ Gestione pacchetti Python ➜ Ambienti**. Dovresti vedere un interprete Python 3.11.
 
-# 3. Installa le dipendenze gratuite
-pip install --upgrade pip
-pip install -r requirements.txt
+### 2. Clonare il repository con l'interfaccia di Visual Studio
 
-# 4. Avvia l'applicazione Streamlit
-streamlit run tributary_portal/streamlit_app.py
-```
+1. Dalla schermata iniziale seleziona **Clona un repository**.
+2. Inserisci l'URL `https://github.com/<tuo-account>/DirittoTributarioHelper.git` nel campo _Repository location_.
+3. Scegli una cartella di destinazione locale (es. `C:\Users\<Nome>\source\repos\`).
+4. Fai clic su **Clona**. Visual Studio scaricherà il progetto e lo aprirà automaticamente.
 
-Apri il browser su `http://localhost:8501` se non si apre automaticamente.
+> 💡 In alternativa puoi scaricare il progetto come ZIP da GitHub e decomprimerlo, quindi aprirlo in Visual Studio con **File ➜ Apri ➜ Cartella...**.
+
+### 3. Configurare l'ambiente virtuale
+
+1. Dal menu principale scegli **Visualizza ➜ Altro Windows ➜ Developer PowerShell** per aprire il terminale integrato.
+2. Assicurati di trovarti nella cartella del progetto appena clonata, ad esempio:
+
+   ```powershell
+   cd C:\Users\<Nome>\source\repos\DirittoTributarioHelper
+   ```
+
+3. Crea l'ambiente virtuale `.venv` con Python 3.11:
+
+   ```powershell
+   py -3.11 -m venv .venv
+   ```
+
+4. Attiva l'ambiente virtuale:
+
+   ```powershell
+   .\.venv\Scripts\activate
+   ```
+
+   Il prompt mostrerà il prefisso `(.venv)` a conferma dell'attivazione.
+
+### 4. Installare le dipendenze del progetto
+
+1. Aggiorna `pip` per evitare avvisi di compatibilità:
+
+   ```powershell
+   python -m pip install --upgrade pip
+   ```
+
+2. Installa i pacchetti necessari a DirittoTributarioHelper:
+
+   ```powershell
+   pip install -r requirements.txt
+   ```
+
+3. Al termine dell'installazione verifica la lista dei pacchetti con `pip list` se vuoi controllare le versioni installate.
+
+### 5. Avviare l'applicazione Streamlit
+
+1. Sempre dal terminale `Developer PowerShell`, con l'ambiente virtuale attivo, esegui:
+
+   ```powershell
+   streamlit run tributary_portal/streamlit_app.py
+   ```
+
+2. Visual Studio mostrerà nel terminale l'URL locale, tipicamente `http://localhost:8501`. Il browser predefinito dovrebbe aprirsi automaticamente; in caso contrario copialo e incollalo manualmente nella barra degli indirizzi.
+
+3. Mantieni aperto il terminale mentre lavori: chiuderlo interromperà il server Streamlit.
+
+### 6. Personalizzare i dati didattici
+
+1. In **Esplora Soluzioni**, espandi la cartella `risorse/`.
+2. Fai doppio clic su `programma_base.json` per modificare l'elenco degli argomenti del piano di studio (una voce per riga, tra virgolette).
+3. Modifica `quiz_tributario.json` per aggiungere o aggiornare le domande del quiz. Ogni voce deve rispettare la struttura: `id`, `question`, `options` (lista), `correct_answer`, `explanation`, `topic` (facoltativo).
+4. Salva i file: Streamlit ricaricherà automaticamente i contenuti al successivo avvio.
+
+### 7. Gestione quotidiana del progetto
+
+- Per avviare nuovamente il portale: apri Visual Studio, riattiva l'ambiente (`.\.venv\Scripts\activate`) e rilancia `streamlit run ...`.
+- Per aggiornare le dipendenze: `pip install --upgrade -r requirements.txt`.
+- Per interrompere l'app: premi `Ctrl+C` nel terminale oppure chiudi il processo `streamlit` dal Task Manager.
+- Per sincronizzare eventuali modifiche con GitHub usa **Git ➜ Commit or Stash...** dentro Visual Studio, quindi **Push**.
 
 ## Gestione dei contenuti didattici
 
