@@ -1,0 +1,106 @@
+[
+  {
+    "id": "capacita_contributiva",
+    "topic": "Principi generali",
+    "question": "Quale articolo della Costituzione sancisce il principio di capacità contributiva?",
+    "options": [
+      "Articolo 23",
+      "Articolo 53",
+      "Articolo 119",
+      "Articolo 97"
+    ],
+    "correct_answer": "Articolo 53",
+    "explanation": "L'articolo 53 della Costituzione stabilisce che tutti sono tenuti a concorrere alle spese pubbliche in ragione della loro capacità contributiva."
+  },
+  {
+    "id": "irpef_aliquote",
+    "topic": "IRPEF",
+    "question": "Qual è il criterio di progressività dell'IRPEF?",
+    "options": [
+      "Aliquote fisse su tutti i redditi",
+      "Aliquote decrescenti all'aumentare del reddito",
+      "Aliquote crescenti per scaglioni di reddito",
+      "Aliquote stabilite annualmente dai Comuni"
+    ],
+    "correct_answer": "Aliquote crescenti per scaglioni di reddito",
+    "explanation": "L'IRPEF è un'imposta personale e progressiva: l'aliquota aumenta al crescere degli scaglioni di reddito imponibile."
+  },
+  {
+    "id": "iva_detrazione",
+    "topic": "IVA",
+    "question": "In quale caso il soggetto passivo IVA può detrarre l'imposta assolta sugli acquisti?",
+    "options": [
+      "Sempre, indipendentemente dalla destinazione del bene",
+      "Solo se i beni o servizi acquistati sono utilizzati per operazioni imponibili",
+      "Solo se i beni sono destinati a uso privato",
+      "Mai, la detrazione non è consentita"
+    ],
+    "correct_answer": "Solo se i beni o servizi acquistati sono utilizzati per operazioni imponibili",
+    "explanation": "La detrazione IVA è ammessa quando gli acquisti sono inerenti all'attività e destinati a operazioni che generano IVA detraibile."
+  },
+  {
+    "id": "accertamento_sintetico",
+    "topic": "Accertamento",
+    "question": "Cos'è l'accertamento sintetico o redditometro?",
+    "options": [
+      "La verifica dei redditi sulla base dei conti correnti",
+      "La ricostruzione del reddito presunto in base alla spesa sostenuta dal contribuente",
+      "Un controllo automatico sulle dichiarazioni IVA",
+      "Un accertamento effettuato solo sui contribuenti forfettari"
+    ],
+    "correct_answer": "La ricostruzione del reddito presunto in base alla spesa sostenuta dal contribuente",
+    "explanation": "L'accertamento sintetico permette di stimare il reddito complessivo netto partendo da indici di capacità contributiva e spese sostenute."
+  },
+  {
+    "id": "sanzioni_ravvedimento",
+    "topic": "Sanzioni",
+    "question": "Qual è la funzione del ravvedimento operoso?",
+    "options": [
+      "Consentire il rimborso automatico delle imposte",
+      "Permettere al contribuente di correggere spontaneamente violazioni con riduzione delle sanzioni",
+      "Sospendere l'obbligo di versamento delle imposte",
+      "Eliminare gli interessi sulle somme dovute"
+    ],
+    "correct_answer": "Permettere al contribuente di correggere spontaneamente violazioni con riduzione delle sanzioni",
+    "explanation": "Il ravvedimento operoso consente di regolarizzare spontaneamente violazioni fiscali beneficiando di sanzioni ridotte proporzionali al ritardo."
+  },
+  {
+    "id": "contenzioso_mediazione",
+    "topic": "Contenzioso tributario",
+    "question": "Quando è obbligatoria la mediazione tributaria prima del ricorso?",
+    "options": [
+      "Per tutti gli atti senza soglie di valore",
+      "Solo per gli atti relativi alle imposte indirette",
+      "Per gli atti impugnabili di valore non superiore a 50.000 euro",
+      "Mai, è sempre facoltativa"
+    ],
+    "correct_answer": "Per gli atti impugnabili di valore non superiore a 50.000 euro",
+    "explanation": "La mediazione tributaria è obbligatoria per gli atti emessi dall'Agenzia delle Entrate di valore fino a 50.000 euro, prima del ricorso alla giustizia tributaria."
+  },
+  {
+    "id": "trib_utili_imu",
+    "topic": "Tributi locali",
+    "question": "Qual è il presupposto dell'IMU (Imposta Municipale Propria)?",
+    "options": [
+      "Il possesso di fabbricati, aree fabbricabili e terreni agricoli",
+      "Il trasferimento di proprietà immobiliare",
+      "Il reddito derivante da locazione",
+      "L'occupazione di suolo pubblico"
+    ],
+    "correct_answer": "Il possesso di fabbricati, aree fabbricabili e terreni agricoli",
+    "explanation": "L'IMU colpisce il possesso di immobili e aree edificabili, indipendentemente dalla loro utilizzazione."
+  },
+  {
+    "id": "iva_split_payment",
+    "topic": "IVA",
+    "question": "Qual è la particolarità del meccanismo dello split payment?",
+    "options": [
+      "L'IVA viene versata direttamente all'erario dal cessionario pubblico",
+      "L'IVA viene sempre versata in due rate",
+      "L'IVA non è dovuta dalle pubbliche amministrazioni",
+      "L'IVA è sempre detraibile per il fornitore"
+    ],
+    "correct_answer": "L'IVA viene versata direttamente all'erario dal cessionario pubblico",
+    "explanation": "Con lo split payment la pubblica amministrazione trattiene l'IVA al momento del pagamento e la versa direttamente all'erario."
+  }
+]
