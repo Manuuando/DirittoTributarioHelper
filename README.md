@@ -1,5 +1,19 @@
 # DirittoTributarioHelper
 
+> 🇬🇧 **Overview.** A Streamlit web app I built to study **Italian tax law** for my final BSc exam.
+> Pick a topic and it takes you straight to the **law article**, a plain-language **explanation** and a **worked example**.
+>
+> **Features:** targeted search (DuckDuckGo) in three tabs · notes archive with Markdown/TXT/PDF export ·
+> study planner that spreads topics over time and exports to CSV or calendar (.ics) · multiple-choice quizzes with error review and live stats.
+>
+> **Stack:** Python · Streamlit · pandas · fpdf2 · duckduckgo_search
+>
+> See also **[TUIR Extractor](https://github.com/Manuuando/TUIR_extractor)**, a fully local RAG assistant built on the official TUIR text.
+>
+> *(Italian setup guide below.)*
+
+---
+
 Portale interattivo per supportare lo studio del diritto tributario. L'applicazione web, realizzata con Streamlit, integra strumenti di ricerca, pianificazione e ripasso per accompagnare l'utente lungo tutto il percorso di studio.
 
 ## Caratteristiche principali
